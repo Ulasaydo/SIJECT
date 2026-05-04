@@ -3,44 +3,56 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/siject_bg"
-    android:orientation="vertical"
-    android:padding="@dimen/spacing_md">
+    android:orientation="vertical">
 
-    <TextView
+    <!-- Toolbar -->
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/historyToolbar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/history"
-        android:textColor="@color/siject_text"
-        android:textSize="24sp"
-        android:textStyle="bold" />
+        android:layout_height="56dp"
+        android:paddingHorizontal="@dimen/spacing_md"
+        android:background="@color/siject_bg"
+        app:title="@string/history"
+        app:titleTextColor="@color/siject_text"
+        app:menu="@menu/menu_history" />
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/clearHistoryButton"
-        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+    <!-- Empty state -->
+    <LinearLayout
+        android:id="@+id/historyEmptyState"
         android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:layout_marginTop="@dimen/spacing_md"
-        android:text="@string/clear_history"
-        android:textColor="@color/siject_text"
-        app:icon="@drawable/ic_refresh"
-        app:iconTint="@color/siject_text" />
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:padding="@dimen/spacing_xl"
+        android:visibility="gone">
 
-    <TextView
-        android:id="@+id/historyEmptyText"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/spacing_md"
-        android:background="@color/siject_surface"
-        android:padding="@dimen/spacing_md"
-        android:text="@string/history_empty"
-        android:textColor="@color/siject_text_muted"
-        android:textSize="16sp" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="📋"
+            android:textSize="48sp" />
+
+        <TextView
+            android:id="@+id/historyEmptyText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_md"
+            android:gravity="center"
+            android:text="@string/history_empty"
+            android:textColor="@color/siject_text_muted"
+            android:textSize="16sp" />
+
+    </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/historyRecyclerView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginTop="@dimen/spacing_md"
         android:layout_weight="1"
-        android:clipToPadding="false" />
+        android:clipToPadding="false"
+        android:paddingHorizontal="@dimen/spacing_md"
+        android:paddingTop="@dimen/spacing_sm"
+        android:paddingBottom="@dimen/spacing_md" />
+
 </LinearLayout>

@@ -1,11 +1,33 @@
 <resources>
     <style name="Theme.SIJECT" parent="Theme.MaterialComponents.DayNight.NoActionBar">
-        <item name="android:fontFamily">sans</item>
+        <item name="android:fontFamily">sans-serif</item>
         <item name="android:windowLightStatusBar">false</item>
         <item name="android:statusBarColor">@color/siject_bg</item>
         <item name="android:navigationBarColor">@color/siject_bg</item>
         <item name="colorPrimary">@color/siject_primary</item>
         <item name="colorPrimaryVariant">@color/siject_primary_dark</item>
         <item name="colorOnPrimary">@color/siject_bg</item>
+        <item name="colorSurface">@color/siject_surface</item>
+        <item name="colorOnSurface">@color/siject_text</item>
+        <item name="colorError">@color/siject_error</item>
+        <item name="materialCardViewStyle">@style/Widget.SIJECT.Card</item>
+    </style>
+
+    <style name="Widget.SIJECT.Card" parent="Widget.MaterialComponents.CardView">
+        <item name="cardElevation">@dimen/elevation_card</item>
+        <item name="cardCornerRadius">@dimen/corner_md</item>
+        <item name="cardBackgroundColor">@color/siject_surface</item>
+        <item name="contentPaddingLeft">@dimen/spacing_md</item>
+        <item name="contentPaddingRight">@dimen/spacing_md</item>
+        <item name="contentPaddingTop">@dimen/spacing_md</item>
+        <item name="contentPaddingBottom">@dimen/spacing_md</item>
+    </style>
+
+    <style name="Widget.SIJECT.SectionHeader" parent="Widget.MaterialComponents.TextView">
+        <item name="android:textSize">11sp</item>
+        <item name="android:textColor">@color/siject_text_muted</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:letterSpacing">0.1</item>
+        <item name="android:layout_marginBottom">8dp</item>
     </style>
 </resources>

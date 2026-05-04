@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.signlanguage.translator.R
 import com.signlanguage.translator.data.model.WordHistory
 import com.signlanguage.translator.databinding.FragmentHistoryBinding
 import com.signlanguage.translator.ui.viewmodels.HistoryViewModel
@@ -30,8 +31,11 @@ class HistoryFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         binding.historyRecyclerView.layoutManager = LinearLayoutManager(requireContext())
         binding.historyRecyclerView.adapter = historyAdapter
-        binding.clearHistoryButton.setOnClickListener {
-            viewModel.clearHistory()
+        binding.historyToolbar.setOnMenuItemClickListener { item ->
+            if (item.itemId == R.id.clearHistoryButton) {
+                viewModel.clearHistory()
+                true
+            } else false
         }
         viewModel.history.observe(viewLifecycleOwner, ::renderHistory)
         viewModel.loadHistory()
@@ -43,8 +47,9 @@ class HistoryFragment : Fragment() {
     }
 
     private fun renderHistory(history: List<WordHistory>) {
-        binding.historyEmptyText.visibility = if (history.isEmpty()) View.VISIBLE else View.GONE
-        binding.historyRecyclerView.visibility = if (history.isEmpty()) View.GONE else View.VISIBLE
+        val isEmpty = history.isEmpty()
+        binding.historyEmptyState.visibility = if (isEmpty) View.VISIBLE else View.GONE
+        binding.historyRecyclerView.visibility = if (isEmpty) View.GONE else View.VISIBLE
         historyAdapter.submitHistory(history)
     }
 }

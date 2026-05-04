@@ -3,96 +3,195 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/siject_bg"
-    android:orientation="vertical"
-    android:padding="@dimen/spacing_md">
+    android:orientation="vertical">
 
-    <TextView
+    <!-- Toolbar -->
+    <com.google.android.material.appbar.MaterialToolbar
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/settings"
-        android:textColor="@color/siject_text"
-        android:textSize="24sp"
-        android:textStyle="bold" />
+        android:layout_height="56dp"
+        android:paddingHorizontal="@dimen/spacing_md"
+        android:background="@color/siject_bg"
+        app:title="@string/settings"
+        app:titleTextColor="@color/siject_text"
+        app:titleTextAppearance="@android:style/TextAppearance.Large" />
 
-    <TextView
-        android:id="@+id/cameraSelectionText"
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/spacing_lg"
-        android:text="@string/camera_selection"
-        android:textColor="@color/siject_text_muted"
-        android:textSize="13sp" />
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:clipToPadding="false"
+        android:paddingHorizontal="@dimen/spacing_md"
+        android:paddingBottom="@dimen/spacing_lg">
 
-    <com.google.android.material.button.MaterialButtonToggleGroup
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/spacing_sm"
-        app:checkedButton="@id/frontCameraButton"
-        app:selectionRequired="true"
-        app:singleSelection="true">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/frontCameraButton"
-            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-            android:layout_width="0dp"
-            android:layout_height="48dp"
-            android:layout_weight="1"
-            android:text="@string/front_camera"
-            android:textColor="@color/siject_text" />
+            <!-- Camera card -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_md"
+                style="@style/Widget.SIJECT.SectionHeader"
+                android:text="@string/camera_selection" />
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/backCameraButton"
-            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-            android:layout_width="0dp"
-            android:layout_height="48dp"
-            android:layout_weight="1"
-            android:text="@string/back_camera"
-            android:textColor="@color/siject_text" />
-    </com.google.android.material.button.MaterialButtonToggleGroup>
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="@dimen/corner_md"
+                app:cardElevation="@dimen/elevation_card"
+                app:cardBackgroundColor="@color/siject_surface">
 
-    <TextView
-        android:id="@+id/confidenceThresholdText"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/spacing_lg"
-        android:text="@string/confidence_threshold"
-        android:textColor="@color/siject_text_muted"
-        android:textSize="13sp" />
+                <com.google.android.material.button.MaterialButtonToggleGroup
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/spacing_md"
+                    app:checkedButton="@id/frontCameraButton"
+                    app:selectionRequired="true"
+                    app:singleSelection="true">
 
-    <SeekBar
-        android:id="@+id/confidenceSeekBar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:max="40"
-        android:progress="20"
-        android:progressTint="@color/siject_primary"
-        android:thumbTint="@color/siject_primary" />
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/frontCameraButton"
+                        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                        android:layout_width="0dp"
+                        android:layout_height="48dp"
+                        android:layout_weight="1"
+                        android:text="@string/front_camera"
+                        android:textColor="@color/siject_text" />
 
-    <com.google.android.material.switchmaterial.SwitchMaterial
-        android:id="@+id/overlaySwitch"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/spacing_md"
-        android:checked="true"
-        android:text="@string/landmark_overlay"
-        android:textColor="@color/siject_text" />
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/backCameraButton"
+                        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                        android:layout_width="0dp"
+                        android:layout_height="48dp"
+                        android:layout_weight="1"
+                        android:text="@string/back_camera"
+                        android:textColor="@color/siject_text" />
 
-    <com.google.android.material.switchmaterial.SwitchMaterial
-        android:id="@+id/fpsSwitch"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:checked="true"
-        android:text="@string/fps_counter_setting"
-        android:textColor="@color/siject_text" />
+                </com.google.android.material.button.MaterialButtonToggleGroup>
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/clearHistoryButton"
-        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-        android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:layout_marginTop="@dimen/spacing_lg"
-        android:text="@string/clear_history"
-        android:textColor="@color/siject_text"
-        app:icon="@drawable/ic_refresh"
-        app:iconTint="@color/siject_text" />
+            </androidx.cardview.widget.CardView>
+
+            <!-- Model card -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_lg"
+                style="@style/Widget.SIJECT.SectionHeader"
+                android:text="@string/confidence_threshold" />
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="@dimen/corner_md"
+                app:cardElevation="@dimen/elevation_card"
+                app:cardBackgroundColor="@color/siject_surface">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="@dimen/spacing_md">
+
+                    <TextView
+                        android:id="@+id/confidenceThresholdText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="@dimen/spacing_sm"
+                        android:text="@string/confidence_threshold"
+                        android:textColor="@color/siject_text"
+                        android:textSize="14sp" />
+
+                    <SeekBar
+                        android:id="@+id/confidenceSeekBar"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:max="40"
+                        android:progress="20"
+                        android:progressTint="@color/siject_primary"
+                        android:thumbTint="@color/siject_primary" />
+
+                </LinearLayout>
+
+            </androidx.cardview.widget.CardView>
+
+            <!-- Display card -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_lg"
+                style="@style/Widget.SIJECT.SectionHeader"
+                android:text="Görünüm" />
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="@dimen/corner_md"
+                app:cardElevation="@dimen/elevation_card"
+                app:cardBackgroundColor="@color/siject_surface">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="@dimen/spacing_md">
+
+                    <com.google.android.material.switchmaterial.SwitchMaterial
+                        android:id="@+id/overlaySwitch"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:checked="true"
+                        android:text="@string/landmark_overlay"
+                        android:textColor="@color/siject_text" />
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginVertical="@dimen/spacing_sm"
+                        android:background="@color/siject_divider" />
+
+                    <com.google.android.material.switchmaterial.SwitchMaterial
+                        android:id="@+id/fpsSwitch"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:checked="true"
+                        android:text="@string/fps_counter_setting"
+                        android:textColor="@color/siject_text" />
+
+                </LinearLayout>
+
+            </androidx.cardview.widget.CardView>
+
+            <!-- Data card -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_lg"
+                style="@style/Widget.SIJECT.SectionHeader"
+                android:text="Veri" />
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="@dimen/corner_md"
+                app:cardElevation="@dimen/elevation_card"
+                app:cardBackgroundColor="@color/siject_surface">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/clearHistoryButton"
+                    style="@style/Widget.MaterialComponents.Button.TextButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="52dp"
+                    android:text="@string/clear_history"
+                    android:textColor="@color/siject_error"
+                    app:icon="@drawable/ic_refresh"
+                    app:iconTint="@color/siject_error" />
+
+            </androidx.cardview.widget.CardView>
+
+        </LinearLayout>
+
+    </ScrollView>
+
 </LinearLayout>

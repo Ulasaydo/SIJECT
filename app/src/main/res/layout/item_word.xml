@@ -1,9 +1,27 @@
-<TextView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/wordText"
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="@dimen/spacing_xs"
-    android:background="@color/siject_surface"
-    android:padding="@dimen/spacing_md"
-    android:textColor="@color/siject_text"
-    android:textSize="16sp" />
+    android:layout_marginBottom="@dimen/spacing_sm"
+    app:cardCornerRadius="@dimen/corner_sm"
+    app:cardElevation="@dimen/elevation_card"
+    app:cardBackgroundColor="@color/siject_surface">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="@dimen/spacing_md"
+        android:gravity="center_vertical">
+
+        <TextView
+            android:id="@+id/wordText"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textColor="@color/siject_text"
+            android:textSize="16sp" />
+
+    </LinearLayout>
+
+</androidx.cardview.widget.CardView>
