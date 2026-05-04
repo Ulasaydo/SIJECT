@@ -187,7 +187,7 @@ app/src/main/
 │
 ├── assets/
 │   ├── sign_language_model.tflite (1.6-2.5 MB) ⭐ FROM HATICE
-│   ├── labels.txt (20 word labels, line by line) ⭐ FROM HATICE
+│   ├── labels.txt (250 word labels, line by line) ⭐ FROM HATICE
 │   └── landmark_indices.json (180 landmark indices) ⭐ TODO: FROM HATICE
 │
 └── AndroidManifest.xml
@@ -731,7 +731,7 @@ class LandmarkOverlayView(context: Context, attrs: AttributeSet? = null)
 
 **Files to obtain from Hatice:**
 - ✅ `sign_language_model.tflite` (1.6-2.5 MB)
-- ✅ `labels.txt` (20 words, line by line)
+- ✅ `labels.txt` (250 words, line by line)
 - 🔴 **TODO:** `landmark_indices.json` (which 180 of 543 landmarks to use)
 - 🔴 **TODO:** Normalization information (scale/range of x, y, z)
 
@@ -1044,8 +1044,8 @@ object PredictionProcessor {
         debugMode: Boolean = false
     ): PredictionResult {
         
-        require(output.size == 20) { "Expected 20 output values, got ${output.size}" }
-        require(labels.size == 20) { "Expected 20 labels, got ${labels.size}" }
+        require(output.size == 250) { "Expected 250 output values, got ${output.size}" }
+        require(labels.size == 250) { "Expected 250 labels, got ${labels.size}" }
         
         // Find argmax
         var maxIdx = 0
@@ -1720,7 +1720,7 @@ class PerformanceMonitor {
 | **Landmark Index Mismatch** | Model tahminleri random | Hatice'den kesin indeks listesi al, test et |
 | **Normalization Scale Mismatch** | Tahminler garbage | Hatice'den normalization range sor |
 | **Model Not Loading** | "Model Not Loaded" hatası | assets/ klasöründe model dosyası olduğunu kontrol et |
-| **Label Count Mismatch** | Index out of bounds | labels.txt'te 20 satır olduğunu doğrula |
+| **Label Count Mismatch** | Index out of bounds | labels.txt'te 250 satır olduğunu doğrula |
 | **Tensor Shape Mismatch** | "Shape mismatch" error | Input reshape doğru format (1, 30, 540) kontrol et |
 | **Confidence Always 0** | Tahminler her zaman 0 | Model output post-processing doğru yapıldığını kontrol et |
 
@@ -1798,7 +1798,7 @@ class TFLiteServiceTest {
         
         assertTrue(result.label in listOf(
             "hello", "bye", "drink", "computer", "book"
-            // ... all 20 labels
+            // ... all 250 labels
         ))
     }
     

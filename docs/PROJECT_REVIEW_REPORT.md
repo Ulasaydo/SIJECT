@@ -150,7 +150,7 @@ Oneri:
 
 ### Label ve sinif sayisi net degil
 
-`labels.txt` dosyasi 20 label iceriyor. Dokumanda model output shape `[1, 20]` olarak belirtilmis. Ancak `Constants.kt` icinde `MODEL_OUTPUT_CLASSES = 250` tanimli.
+`labels.txt` dosyasi artik 250 label iceriyor ve `Constants.kt` icindeki `MODEL_OUTPUT_CLASSES = 250` kontratiyla uyumlu.
 
 Bu fallback tahminlerde ve output mapping tarafinda karisiklik yaratabilir.
 
@@ -204,7 +204,7 @@ Dikkat edilmesi gerekenler:
 1. Model tensor sozlesmesini netlestir:
    - Model input shape nedir?
    - 180 landmark mi, 543 landmark mi kullaniliyor?
-   - Output sinif sayisi 20 mi, 250 mi?
+   - Output sinif sayisi 250 olarak netlesti.
 
 2. `landmark_indices.json` dosyasini gercek indekslerle tamamla.
 

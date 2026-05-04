@@ -134,7 +134,7 @@ class PerformanceMonitor {
 | **Landmark Index Mismatch** | Model tahminleri random | Hatice'den kesin indeks listesi al, test et |
 | **Normalization Scale Mismatch** | Tahminler garbage | Hatice'den normalization range sor |
 | **Model Not Loading** | "Model Not Loaded" hatası | assets/ klasöründe model dosyası olduğunu kontrol et |
-| **Label Count Mismatch** | Index out of bounds | labels.txt'te 20 satır olduğunu doğrula |
+| **Label Count Mismatch** | Index out of bounds | labels.txt'te 250 satır olduğunu doğrula |
 | **Tensor Shape Mismatch** | "Shape mismatch" error | Input reshape doğru format (1, 30, 540) kontrol et |
 | **Confidence Always 0** | Tahminler her zaman 0 | Model output post-processing doğru yapıldığını kontrol et |
 
@@ -211,7 +211,7 @@ class TFLiteServiceTest {
 
         assertTrue(result.label in listOf(
             "hello", "bye", "drink", "computer", "book"
-            // ... all 20 labels
+            // ... all 250 labels
         ))
     }
 

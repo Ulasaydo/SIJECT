@@ -175,7 +175,7 @@ app/src/main/
 │
 ├── assets/
 │   ├── sign_language_model.tflite (1.6-2.5 MB) ⭐ FROM HATICE
-│   ├── labels.txt (20 word labels, line by line) ⭐ FROM HATICE
+│   ├── labels.txt (250 word labels, line by line) ⭐ FROM HATICE
 │   └── landmark_indices.json (180 landmark indices) ⭐ TODO: FROM HATICE
 │
 └── AndroidManifest.xml

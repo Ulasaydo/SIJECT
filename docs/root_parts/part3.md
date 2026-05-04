@@ -196,7 +196,7 @@ class LandmarkOverlayView(context: Context, attrs: AttributeSet? = null)
 
 **Files to obtain from Hatice:**
 - ✅ `sign_language_model.tflite` (1.6-2.5 MB)
-- ✅ `labels.txt` (20 words, line by line)
+- ✅ `labels.txt` (250 words, line by line)
 - 🔴 **TODO:** `landmark_indices.json` (which 180 of 543 landmarks to use)
 - 🔴 **TODO:** Normalization information (scale/range of x, y, z)
 
@@ -463,8 +463,8 @@ object PredictionProcessor {
         debugMode: Boolean = false
     ): PredictionResult {
 
-        require(output.size == 20) { "Expected 20 output values, got ${output.size}" }
-        require(labels.size == 20) { "Expected 20 labels, got ${labels.size}" }
+        require(output.size == 250) { "Expected 250 output values, got ${output.size}" }
+        require(labels.size == 250) { "Expected 250 labels, got ${labels.size}" }
 
         var maxIdx = 0
         var maxValue = output[0]

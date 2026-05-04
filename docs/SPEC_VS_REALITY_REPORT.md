@@ -239,7 +239,7 @@ CLAUDE.md Bölüm 15'teki sorular:
 | Landmark seçimi | ✅ `landmark_indices.json` 543 indeksle configured |
 | Coordinate normalization | ⚠️ Asset'te belirtilmiş ama **end-to-end gerçek cihaz/model ile doğrulama** yapılmamış |
 | Model accuracy | ❓ Hatice'den bilgi yok (skor) |
-| Label order | ⚠️ `labels.txt` mevcut; 20 label var, model output kontratı 250 sınıf |
+| Label order | ✅ `labels.txt` 250 label ile model output kontratına uyumlu |
 | Model file details | ✅ `.tflite` mevcut, `[1, 30, 1629] → [1, 250]` shape validation kod tarafında var |
 
 ### 🟡 Important
@@ -264,7 +264,7 @@ CLAUDE.md Bölüm 15'teki sorular:
 **Çalışır durumda:** Tam pipeline (camera → landmark → inference → API → TTS).
 **Tamamlanan son işler:** UI'da TTS/kopyala butonları, RecyclerView history, temel androidTest/Espresso, TFLite instrumented test, README, CHANGELOG, KDoc.
 **Eksik:** Gerçek cihazda instrumented test koşumu, benchmark testleri, Hilt DI (opsiyonel), Hatice ile model/label kontratı doğrulaması.
-**Risk:** Gerçek cihaz/gerçek model ile end-to-end accuracy testi yapılmadı; model output 250 sınıfken `labels.txt` 20 label içeriyor.
+**Risk:** Gerçek cihaz/gerçek model ile end-to-end accuracy testi yapılmadı; label sayısı artık model output kontratıyla uyumlu.
 
 **Hackathon teslimi için kullanılabilir** — kalan işler "polish" kategorisinde.
 

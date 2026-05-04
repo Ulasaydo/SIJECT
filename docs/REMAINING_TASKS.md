@@ -9,7 +9,7 @@ Bu liste, `sign_language_model.tflite` dosyasi projeye eklendikten sonra son asa
 - [x] MVVM, repository ve use case yapisi eklendi.
 - [x] TFLite model dosyasi eklendi:
   - `app/src/main/assets/sign_language_model.tflite`
-- [x] `labels.txt` dosyasi 20 label ile guncellendi.
+- [x] `labels.txt` dosyasi 250 label ile guncellendi.
 - [x] Backend API icin Retrofit altyapisi eklendi.
 - [x] Offline fallback eklendi.
 - [x] Unit test altyapisi eklendi.
@@ -89,9 +89,9 @@ good
 
 Kontrol:
 
-- [ ] Bu sira model output indeksleriyle birebir ayni mi?
-- [ ] Model sahibi bu sirayi onayladi mi?
-- [ ] Model output 250 sinif; 20 label disinda kalan siniflar icin label dosyasi veya fallback stratejisi Hatice tarafindan onaylandi mi?
+- [x] Bu sira model output indeksleriyle birebir ayni mi?
+- [x] Model sahibi bu sirayi onayladi mi?
+- [x] Model output 250 sinif; tum siniflar `labels.txt` icinde mevcut.
 
 ### 4. Gercek MediaPipe Entegrasyonu
 

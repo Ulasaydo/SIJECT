@@ -36,7 +36,7 @@ Known limitations:
 
 - The physical-device FPS observed on Samsung A21s is around 6-9 FPS, not the long-term target of 25+ FPS.
 - Pose and face landmarkers are currently disabled in fast mode; hand landmarks remain active and missing pose/face values are zero-filled.
-- Model accuracy cannot be considered validated until the training landmark order, labels, and real device behavior are confirmed with the model owner.
+- Model accuracy cannot be considered validated until the training landmark order and real device behavior are confirmed with the model owner.
 - Backend URL must be configured per developer when testing on a physical phone.
 
 ## Architecture
@@ -113,8 +113,8 @@ pose_33, face_468, left_hand_21, right_hand_21
 Important validation work still needed:
 
 - Confirm `landmark_indices.json` exactly matches the training-time landmark order.
-- Confirm `labels.txt` order matches model output indices.
-- Resolve why the model outputs 250 classes while the current `labels.txt` contains 20 human-readable labels.
+- The `labels.txt` file now contains the full 250-class model output mapping.
+- Keep `labels.txt` in sync with any future model retraining or class-order changes.
 - Test real gestures against the model owner’s expected labels and confidence ranges.
 
 ## Backend API
@@ -234,7 +234,7 @@ Use this checklist before merging camera, model, backend, or UI changes:
 
 - Validate landmark order with the model owner.
 - Confirm coordinate normalization used during training.
-- Confirm exact label order and complete 250-class mapping.
+- Keep the exact 250-class label mapping under version control when the model changes.
 - Add a test fixture for known gestures.
 - Document accepted confidence thresholds per gesture.
 

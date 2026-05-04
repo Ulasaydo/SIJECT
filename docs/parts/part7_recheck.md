@@ -36,12 +36,12 @@
 | `Constants.kt:15` | `MODEL_OUTPUT_CLASSES = 250` |
 | `Constants.kt:11-14` | `MODEL_FEATURE_SIZE = 1629` |
 | `TFLiteService.kt:137` | `expectedOutputShape = [1, 250]` |
-| `labels.txt` | **Sadece 20 satır** |
+| `labels.txt` | **250 satır** |
 
-**Sonuç:** Model 250 sınıf çıkarıyor, `labels.txt` 20 label. Eğer `predictedIndex >= 20` olursa `labels[predictedIndex]` → **IndexOutOfBoundsException** (runtime crash).
+**Sonuç:** Model 250 sınıf çıkarıyor ve `labels.txt` artık 250 label içeriyor. Label mismatch kaynaklı runtime crash riski kapandı.
 
 **Çözüm seçenekleri:**
-1. `labels.txt`'i 250 satıra tamamla (Hatice'den tam liste iste)
+1. `labels.txt` 250 satıra tamamlandı
 2. `inference()` içinde guard: `if (predictedIndex >= labels.size) return "Index Out of Range"` (zaten kodda olabilir, kontrol et)
 3. Modeli yeniden eğitip 20 sınıfa indir
 
@@ -51,7 +51,7 @@
 
 | Eksik | Etki | Öncelik |
 |-------|------|---------|
-| `labels.txt` 230 satır eksik | **Runtime crash riski** | 🔴 Kritik |
+| `labels.txt` 250 label ile tamamlandı | **Crash riski kapandı** | ✅ Tamamlandı |
 | Gerçek cihaz `connectedAndroidTest` | Doğrulama eksik | 🟡 Orta |
 | KDoc coverage minimal | Polish | 🟢 Düşük |
 | Hilt DI | Opsiyonel | 🟢 Düşük |
@@ -66,7 +66,7 @@
 |-------|--------|------|
 | W1-2 Altyapı | %95 | %95 |
 | W2-3 MediaPipe | %95 | %95 |
-| W3-4 TFLite | %95 | %92 (label mismatch nedeniyle düştü) |
+| W3-4 TFLite | %95 | %95 (label mismatch kapandı) |
 | W4-5 Backend | %90 | %95 (TTS/Copy butonu) |
 | W5-6 Test | %60 | %75 (androidTest eklendi) |
 | W6-7 Polish | %40 | %85 (README, CHANGELOG, KDoc) |
@@ -79,11 +79,11 @@
 
 **Tamamlanan polish:** UI butonları, RecyclerView, instrumented test scaffolding, dokümantasyon — hepsi doğrulandı.
 
-**Tek kritik açık bulgu:** `labels.txt` ↔ `MODEL_OUTPUT_CLASSES` mismatch. Bu çözülmeden gerçek cihazda runtime crash olabilir.
+**Tek kritik açık bulgu kapandı:** `labels.txt` ↔ `MODEL_OUTPUT_CLASSES` mismatch giderildi.
 
 **Aksiyon:**
-1. 🔴 Hatice'den tam 250 label listesi al → `labels.txt`'i güncelle
+1. ✅ Tam 250 label listesi alındı ve `labels.txt` güncellendi
 2. 🟡 `connectedDebugAndroidTest` gerçek cihaz/emülatörde koştur
 3. 🟢 Kalanlar opsiyonel
 
-Hackathon teslimi: **label mismatch çözülürse hazır.**
+Hackathon teslimi: **label mismatch çözüldü; gerçek cihaz doğrulaması sürüyor.**
