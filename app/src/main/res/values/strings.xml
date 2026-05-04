@@ -1,0 +1,36 @@
+<resources>
+    <string name="app_name">SIJECT</string>
+    <string name="camera_permission_title">Kamera izni gerekli</string>
+    <string name="camera_permission_message">İşaret dili çevirisi için ön kamera erişimi gerekiyor.</string>
+    <string name="camera_permission_button">İzin ver</string>
+    <string name="prediction_waiting">Tahmin bekleniyor</string>
+    <string name="recognized_words_title">Algılanan kelimeler</string>
+    <string name="translated_sentence_placeholder">Cümle burada görünecek</string>
+    <string name="translated_sentence_title">Çevrilen cümle</string>
+    <string name="fps_counter">FPS: %1$d</string>
+    <string name="latency_counter">Landmark: %1$d ms · Inference: %2$d ms</string>
+    <string name="candidate_placeholder">-</string>
+    <string name="settings">Ayarlar</string>
+    <string name="history">Geçmiş</string>
+    <string name="debug">Debug</string>
+    <string name="clear">Temizle</string>
+    <string name="history_empty">Henüz kelime geçmişi yok.</string>
+    <string name="camera_selection">Kamera seçimi</string>
+    <string name="front_camera">Ön kamera</string>
+    <string name="back_camera">Arka kamera</string>
+    <string name="confidence_threshold">Confidence threshold</string>
+    <string name="landmark_overlay">Landmark overlay</string>
+    <string name="fps_counter_setting">FPS counter</string>
+    <string name="clear_history">Geçmişi temizle</string>
+    <string name="history_cleared">Geçmiş temizlendi</string>
+    <string name="refresh_translation">Çeviriyi yenile</string>
+    <string name="run_pipeline_demo">Pipeline test</string>
+    <string name="play_tts">TTS Oynat</string>
+    <string name="copy_translation">Kopyala</string>
+    <string name="no_translation_to_play">Seslendirilecek cümle yok</string>
+    <string name="no_translation_to_copy">Kopyalanacak cümle yok</string>
+    <string name="translation_copied">Cümle kopyalandı</string>
+    <string name="translation_clip_label">Çevrilen cümle</string>
+    <string name="backend_online">Backend bağlı</string>
+    <string name="backend_offline">Backend yok, offline cümle gösteriliyor</string>
+</resources>

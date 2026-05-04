@@ -1,0 +1,98 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/siject_bg"
+    android:orientation="vertical"
+    android:padding="@dimen/spacing_md">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/settings"
+        android:textColor="@color/siject_text"
+        android:textSize="24sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/cameraSelectionText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/spacing_lg"
+        android:text="@string/camera_selection"
+        android:textColor="@color/siject_text_muted"
+        android:textSize="13sp" />
+
+    <com.google.android.material.button.MaterialButtonToggleGroup
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/spacing_sm"
+        app:checkedButton="@id/frontCameraButton"
+        app:selectionRequired="true"
+        app:singleSelection="true">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/frontCameraButton"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_weight="1"
+            android:text="@string/front_camera"
+            android:textColor="@color/siject_text" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/backCameraButton"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_weight="1"
+            android:text="@string/back_camera"
+            android:textColor="@color/siject_text" />
+    </com.google.android.material.button.MaterialButtonToggleGroup>
+
+    <TextView
+        android:id="@+id/confidenceThresholdText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/spacing_lg"
+        android:text="@string/confidence_threshold"
+        android:textColor="@color/siject_text_muted"
+        android:textSize="13sp" />
+
+    <SeekBar
+        android:id="@+id/confidenceSeekBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:max="40"
+        android:progress="20"
+        android:progressTint="@color/siject_primary"
+        android:thumbTint="@color/siject_primary" />
+
+    <com.google.android.material.switchmaterial.SwitchMaterial
+        android:id="@+id/overlaySwitch"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/spacing_md"
+        android:checked="true"
+        android:text="@string/landmark_overlay"
+        android:textColor="@color/siject_text" />
+
+    <com.google.android.material.switchmaterial.SwitchMaterial
+        android:id="@+id/fpsSwitch"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:checked="true"
+        android:text="@string/fps_counter_setting"
+        android:textColor="@color/siject_text" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/clearHistoryButton"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_marginTop="@dimen/spacing_lg"
+        android:text="@string/clear_history"
+        android:textColor="@color/siject_text"
+        app:icon="@drawable/ic_refresh"
+        app:iconTint="@color/siject_text" />
+</LinearLayout>

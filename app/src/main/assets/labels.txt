@@ -1,0 +1,20 @@
+hello
+bye
+drink
+computer
+book
+yes
+no
+thank you
+please
+help
+name
+what
+where
+when
+why
+eat
+water
+more
+finish
+good

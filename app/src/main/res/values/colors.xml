@@ -1,0 +1,9 @@
+<resources>
+    <color name="siject_bg">#101418</color>
+    <color name="siject_surface">#182027</color>
+    <color name="siject_primary">#43B5A0</color>
+    <color name="siject_primary_dark">#2E8A7A</color>
+    <color name="siject_text">#F5F7FA</color>
+    <color name="siject_text_muted">#AEB8C2</color>
+    <color name="siject_warning">#F0B44D</color>
+</resources>

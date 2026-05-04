@@ -1,0 +1,9 @@
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/wordText"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="@dimen/spacing_xs"
+    android:background="@color/siject_surface"
+    android:padding="@dimen/spacing_md"
+    android:textColor="@color/siject_text"
+    android:textSize="16sp" />
