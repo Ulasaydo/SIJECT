@@ -84,31 +84,28 @@ app/src/main/assets/
 
 Required files:
 
-- `sign_language_model.tflite`
+- `asl_model_final.tflite`
 - `labels.txt`
 - `landmark_indices.json`
 - `hand_landmarker.task`
 - `pose_landmarker.task`
-- `face_landmarker.task`
 
 Current model contract:
 
 ```text
-Input  = [1, 30, 1629]
+Input  = [1, 30, 144]
 Output = [1, 250]
 ```
 
 The input means:
 
 ```text
-30 frames x 543 landmarks x 3 coordinates = 30 x 1629
+30 frames x 48 selected landmarks x 3 coordinates = 30 x 144
 ```
 
-Expected landmark order:
-
-```text
-pose_33, face_468, left_hand_21, right_hand_21
-```
+48 selected landmarks = 6 pose upper body + 21 left hand + 21 right hand. See
+[`docs/MODEL_CONTRACT.md`](docs/MODEL_CONTRACT.md) for the canonical specification
+(selected indices, normalization, coordinate space).
 
 Important validation work still needed:
 

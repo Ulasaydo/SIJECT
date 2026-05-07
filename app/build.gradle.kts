@@ -30,6 +30,16 @@ android {
         viewBinding = true
         buildConfig = true
     }
+
+    buildTypes {
+        getByName("release") {
+            isMinifyEnabled = false
+            ndk {
+                abiFilters.clear()
+                abiFilters.addAll(listOf("arm64-v8a", "armeabi-v7a"))
+            }
+        }
+    }
 }
 
 dependencies {
@@ -45,16 +55,9 @@ dependencies {
     implementation("androidx.camera:camera-lifecycle:1.3.4")
     implementation("androidx.camera:camera-view:1.3.4")
 
-    implementation("com.google.mediapipe:tasks-vision:0.10.14") {
-        exclude(group = "org.tensorflow", module = "tensorflow-lite-api")
-    }
-    implementation("org.tensorflow:tensorflow-lite:2.14.0") {
-        exclude(group = "org.tensorflow", module = "tensorflow-lite-api")
-    }
-    implementation(files("libs/tensorflow-lite-api-2.14.0-classes.jar"))
-    implementation("org.tensorflow:tensorflow-lite-select-tf-ops:2.14.0") {
-        exclude(group = "org.tensorflow", module = "tensorflow-lite-api")
-    }
+    implementation("com.google.mediapipe:tasks-vision:0.10.14")
+    implementation("com.google.ai.edge.litert:litert:1.4.0")
+    implementation("com.google.ai.edge.litert:litert-gpu:1.4.0")
 
     implementation("com.google.android.material:material:1.12.0")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.9.0")
@@ -65,6 +68,7 @@ dependencies {
 
     testImplementation("junit:junit:4.13.2")
     testImplementation("org.json:json:20240303")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.9.0")
     androidTestImplementation("androidx.test:core:1.5.0")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")

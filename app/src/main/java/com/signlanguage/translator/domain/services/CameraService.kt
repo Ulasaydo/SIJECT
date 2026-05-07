@@ -37,7 +37,7 @@ class CameraService(
         .setAspectRatioStrategy(AspectRatioStrategy.RATIO_4_3_FALLBACK_AUTO_STRATEGY)
         .setResolutionStrategy(
             ResolutionStrategy(
-                Size(160, 120),
+                Size(320, 240),
                 ResolutionStrategy.FALLBACK_RULE_CLOSEST_LOWER_THEN_HIGHER
             )
         )

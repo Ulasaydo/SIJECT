@@ -7,7 +7,7 @@ class TFLiteServiceTest {
     @Test
     fun validateTensorShapes_acceptsExpectedModelContract() {
         TFLiteService.validateTensorShapes(
-            inputShape = intArrayOf(1, 30, 1629),
+            inputShape = intArrayOf(1, 30, 144),
             outputShape = intArrayOf(1, 250)
         )
     }
@@ -29,7 +29,7 @@ class TFLiteServiceTest {
     fun validateTensorShapes_rejectsOutputShapeMismatch() {
         val error = runCatching {
             TFLiteService.validateTensorShapes(
-                inputShape = intArrayOf(1, 30, 1629),
+                inputShape = intArrayOf(1, 30, 144),
                 outputShape = intArrayOf(1, 20)
             )
         }.exceptionOrNull()

@@ -1,6 +1,7 @@
 package com.signlanguage.translator.domain.services
 
 import android.content.Context
+import com.signlanguage.translator.BuildConfig
 import com.signlanguage.translator.data.model.PredictionResult
 import com.signlanguage.translator.utils.Constants
 import com.signlanguage.translator.utils.LogUtils
@@ -69,7 +70,7 @@ class TFLiteService(context: Context) {
                     labels = labels,
                     confidenceThreshold = confidenceThreshold,
                     inferenceTimeMillis = inferenceTimeMillis,
-                    debugMode = true
+                    debugMode = BuildConfig.DEBUG
                 )
             }.getOrElse { throwable ->
                 LogUtils.e("TFLite", "Inference failed", throwable)
@@ -112,23 +113,15 @@ class TFLiteService(context: Context) {
     }
 
     private fun createInterpreter(modelBuffer: ByteBuffer): Interpreter {
-        return runCatching {
-            modelBuffer.rewind()
-            Interpreter(
-                modelBuffer,
-                Interpreter.Options()
-                    .setNumThreads(4)
-                    .setUseNNAPI(true)
-            )
-        }.getOrElse { throwable ->
-            LogUtils.e("TFLite", "NNAPI initialization failed; retrying with CPU", throwable)
-            modelBuffer.rewind()
-            Interpreter(
-                modelBuffer,
-                Interpreter.Options()
-                    .setNumThreads(4)
-                    .setUseNNAPI(false)
-            )
+        modelBuffer.rewind()
+        return Interpreter(
+            modelBuffer,
+            Interpreter.Options()
+                .setNumThreads(4)
+                .setUseXNNPACK(true)
+                .setUseNNAPI(false)
+        ).also {
+            LogUtils.d("PerfProfile", "TFLite acceleration mode: XNNPACK CPU (threads=4)")
         }
     }
 

@@ -1,6 +1,8 @@
 package com.signlanguage.translator.domain.services
 
 import android.content.Context
+import androidx.annotation.OptIn
+import androidx.camera.core.ExperimentalGetImage
 import androidx.camera.core.ImageProxy
 import com.google.mediapipe.framework.image.MediaImageBuilder
 import com.google.mediapipe.tasks.components.containers.Category
@@ -31,6 +33,7 @@ class MediaPipeService(
     private var handDelegate: Delegate? = null
     private var requiredAssetsVerified = false
 
+    @OptIn(ExperimentalGetImage::class)
     fun extractLandmarks(imageProxy: ImageProxy): List<LandmarkPoint> {
         ensureLandmarkers()
         val mediaImage = imageProxy.image
@@ -38,9 +41,7 @@ class MediaPipeService(
         val mpImage = MediaImageBuilder(mediaImage).build()
         val rotationDegrees = imageProxy.imageInfo.rotationDegrees
         val timestampMillis = TimeUnit.NANOSECONDS.toMillis(imageProxy.imageInfo.timestamp)
-        val imageOptions = ImageProcessingOptions.builder()
-            .setRotationDegrees(rotationDegrees)
-            .build()
+        val imageOptions = ImageProcessingOptions.builder().build()
 
         return try {
             val pose = if (ENABLE_POSE_LANDMARKER) {
@@ -65,14 +66,26 @@ class MediaPipeService(
             val hands = handsResult?.landmarks().orEmpty()
             val handedness = handsResult?.handedness().orEmpty()
 
-            buildList(Constants.TOTAL_LANDMARK_COUNT) {
-                appendLandmarks(pose, POSE_LANDMARK_COUNT, rotationDegrees)
-                appendLandmarks(face, FACE_LANDMARK_COUNT, rotationDegrees)
-                appendHandLandmarks(hands, handedness, "Left", rotationDegrees)
-                appendHandLandmarks(hands, handedness, "Right", rotationDegrees)
+            val raw = buildList(Constants.TOTAL_LANDMARK_COUNT) {
+                appendLandmarks(pose, POSE_LANDMARK_COUNT)
+                appendLandmarks(face, FACE_LANDMARK_COUNT)
+                appendHandLandmarks(hands, handedness, "Left")
+                appendHandLandmarks(hands, handedness, "Right")
             }
+            applyDisplayRotation(raw, rotationDegrees)
         } finally {
             mpImage.close()
+        }
+    }
+
+    private fun applyDisplayRotation(
+        points: List<LandmarkPoint>,
+        rotationDegrees: Int
+    ): List<LandmarkPoint> {
+        if ((((rotationDegrees % 360) + 360) % 360) == 0) return points
+        return points.map { p ->
+            val (rx, ry) = CoordinateTransformer.rotateNormalized(p.x, p.y, rotationDegrees)
+            p.copy(x = rx, y = ry)
         }
     }
 
@@ -105,7 +118,7 @@ class MediaPipeService(
             poseLandmarker = PoseLandmarker.createFromOptions(
                 context,
                 PoseLandmarker.PoseLandmarkerOptions.builder()
-                    .setBaseOptions(taskBaseOptions(Constants.POSE_LANDMARKER_TASK_FILE))
+                    .setBaseOptions(taskBaseOptions(Constants.POSE_LANDMARKER_TASK_FILE, Delegate.GPU))
                     .setRunningMode(RunningMode.VIDEO)
                     .setNumPoses(1)
                     .setMinPoseDetectionConfidence(confidenceThreshold)
@@ -156,13 +169,13 @@ class MediaPipeService(
         return runCatching {
             createHandLandmarker(Delegate.GPU).also {
                 handDelegate = Delegate.GPU
-                LogUtils.d("MediaPipe", "Hand landmarker initialized with GPU delegate")
+                LogUtils.d("PerfProfile", "Hand landmarker initialized with GPU delegate")
             }
         }.getOrElse { throwable ->
             LogUtils.e("MediaPipe", "GPU hand landmarker unavailable; falling back to CPU", throwable)
             createHandLandmarker(Delegate.CPU).also {
                 handDelegate = Delegate.CPU
-                LogUtils.d("MediaPipe", "Hand landmarker initialized with CPU delegate")
+                LogUtils.d("PerfProfile", "Hand landmarker initialized with CPU delegate")
             }
         }
     }
@@ -173,7 +186,7 @@ class MediaPipeService(
             HandLandmarker.HandLandmarkerOptions.builder()
                 .setBaseOptions(taskBaseOptions(Constants.HAND_LANDMARKER_TASK_FILE, delegate))
                 .setRunningMode(RunningMode.VIDEO)
-                .setNumHands(1)
+                .setNumHands(2)
                 .setMinHandDetectionConfidence(confidenceThreshold)
                 .setMinHandPresenceConfidence(confidenceThreshold)
                 .setMinTrackingConfidence(confidenceThreshold)
@@ -190,57 +203,45 @@ class MediaPipeService(
 
     private fun MutableList<LandmarkPoint>.appendLandmarks(
         landmarks: List<NormalizedLandmark>,
-        expectedCount: Int,
-        rotationDegrees: Int
+        expectedCount: Int
     ) {
         repeat(expectedCount) { index ->
-            add(landmarks.getOrNull(index).toLandmarkPoint(rotationDegrees))
+            add(landmarks.getOrNull(index).toLandmarkPoint())
         }
     }
 
     private fun MutableList<LandmarkPoint>.appendHandLandmarks(
         hands: List<List<NormalizedLandmark>>,
         handedness: List<List<Category>>,
-        expectedLabel: String,
-        rotationDegrees: Int
+        expectedLabel: String
     ) {
         val handIndex = handedness.indexOfFirst { categories ->
             categories.firstOrNull()?.categoryName()?.equals(expectedLabel, ignoreCase = true) == true
         }
-        appendLandmarks(hands.getOrNull(handIndex).orEmpty(), HAND_LANDMARK_COUNT, rotationDegrees)
+        appendLandmarks(hands.getOrNull(handIndex).orEmpty(), HAND_LANDMARK_COUNT)
     }
 
-    private fun NormalizedLandmark?.toLandmarkPoint(rotationDegrees: Int): LandmarkPoint {
+    private fun NormalizedLandmark?.toLandmarkPoint(): LandmarkPoint {
         if (this == null) return ZERO_LANDMARK
-        val (displayX, displayY) = rotateNormalizedPoint(x(), y(), rotationDegrees)
         return LandmarkPoint(
-            x = displayX,
-            y = displayY,
+            x = x(),
+            y = y(),
             z = z(),
             visibility = visibility().orElse(presence().orElse(1f))
         )
     }
 
-    private fun rotateNormalizedPoint(x: Float, y: Float, rotationDegrees: Int): Pair<Float, Float> {
-        return when (((rotationDegrees % 360) + 360) % 360) {
-            90 -> (1f - y) to x
-            180 -> (1f - x) to (1f - y)
-            270 -> y to (1f - x)
-            else -> x to y
-        }
-    }
-
     companion object {
-        private const val ENABLE_POSE_LANDMARKER = false
+        private const val ENABLE_POSE_LANDMARKER = true
         private const val ENABLE_FACE_LANDMARKER = false
         private const val POSE_LANDMARK_COUNT = 33
         private const val FACE_LANDMARK_COUNT = 468
         private const val HAND_LANDMARK_COUNT = 21
         private val ZERO_LANDMARK = LandmarkPoint(x = 0f, y = 0f, z = 0f, visibility = 0f)
-        private val REQUIRED_TASK_ASSETS = listOf(
-            Constants.POSE_LANDMARKER_TASK_FILE,
-            Constants.FACE_LANDMARKER_TASK_FILE,
-            Constants.HAND_LANDMARKER_TASK_FILE
-        )
+        private val REQUIRED_TASK_ASSETS = buildList {
+            if (ENABLE_POSE_LANDMARKER) add(Constants.POSE_LANDMARKER_TASK_FILE)
+            if (ENABLE_FACE_LANDMARKER) add(Constants.FACE_LANDMARKER_TASK_FILE)
+            add(Constants.HAND_LANDMARKER_TASK_FILE)
+        }
     }
 }

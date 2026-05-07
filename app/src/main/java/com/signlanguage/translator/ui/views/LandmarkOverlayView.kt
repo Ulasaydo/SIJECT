@@ -6,6 +6,7 @@ import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.RectF
 import android.util.AttributeSet
+import android.util.Log
 import android.view.View
 import com.signlanguage.translator.data.model.LandmarkPoint
 import kotlin.math.max
@@ -56,6 +57,7 @@ class LandmarkOverlayView @JvmOverloads constructor(
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
+        val t0 = System.nanoTime()
         drawConnections(canvas)
         landmarks.asSequence().filter { it.isVisible() }.forEach { point ->
             pointPaint.color = when {
@@ -65,6 +67,8 @@ class LandmarkOverlayView @JvmOverloads constructor(
             }
             canvas.drawCircle(point.toCanvasX(), point.toCanvasY(), 4f, pointPaint)
         }
+        val ms = (System.nanoTime() - t0) / 1_000_000.0
+        Log.d("PerfProfile", "onDraw=${"%.2f".format(ms)}ms lm=${landmarks.size}")
     }
 
     private fun drawConnections(canvas: Canvas) {

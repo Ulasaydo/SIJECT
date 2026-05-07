@@ -1,18 +1,22 @@
 package com.signlanguage.translator.domain.services
 
+import com.signlanguage.translator.utils.Constants
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class LandmarkProcessorTest {
+    private val expected = Constants.SELECTED_LANDMARK_COUNT // 48
+
     @Test
     fun parseLandmarkIndices_acceptsExactlyExpectedIndices() {
-        val indices = (0 until 543).joinToString(",")
+        // Use a contiguous range that fits inside [0, TOTAL_LANDMARK_COUNT) and has size SELECTED.
+        val indices = (0 until expected).joinToString(",")
         val parsed = LandmarkProcessor.parseLandmarkIndices("""{"indices":[$indices]}""")
 
-        assertEquals(543, parsed.size)
+        assertEquals(expected, parsed.size)
         assertEquals(0, parsed.first())
-        assertEquals(542, parsed.last())
+        assertEquals(expected - 1, parsed.last())
     }
 
     @Test
@@ -22,23 +26,24 @@ class LandmarkProcessorTest {
         }.exceptionOrNull()
 
         assertTrue(error is IllegalStateException)
-        assertTrue(error?.message.orEmpty().contains("expected 543"))
+        assertTrue(error?.message.orEmpty().contains("expected $expected"))
     }
 
     @Test
     fun parseLandmarkIndices_rejectsWrongLengthIndices() {
-        val indices = (0 until 542).joinToString(",")
+        val indices = (0 until (expected - 1)).joinToString(",")
         val error = runCatching {
             LandmarkProcessor.parseLandmarkIndices("""{"indices":[$indices]}""")
         }.exceptionOrNull()
 
         assertTrue(error is IllegalStateException)
-        assertTrue(error?.message.orEmpty().contains("542"))
+        assertTrue(error?.message.orEmpty().contains("${expected - 1}"))
     }
 
     @Test
     fun parseLandmarkIndices_rejectsOutOfRangeIndices() {
-        val indices = (0 until 542).plus(543).joinToString(",")
+        // Build a list of size SELECTED with one out-of-range entry.
+        val indices = (0 until (expected - 1)).plus(Constants.TOTAL_LANDMARK_COUNT).joinToString(",")
         val error = runCatching {
             LandmarkProcessor.parseLandmarkIndices("""{"indices":[$indices]}""")
         }.exceptionOrNull()

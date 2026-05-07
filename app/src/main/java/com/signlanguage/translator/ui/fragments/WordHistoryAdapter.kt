@@ -2,6 +2,8 @@ package com.signlanguage.translator.ui.fragments
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.signlanguage.translator.data.model.WordHistory
 import com.signlanguage.translator.databinding.ItemWordBinding
@@ -9,9 +11,8 @@ import com.signlanguage.translator.utils.asPercentText
 import java.text.DateFormat
 import java.util.Date
 
-class WordHistoryAdapter : RecyclerView.Adapter<WordHistoryAdapter.WordHistoryViewHolder>() {
+class WordHistoryAdapter : ListAdapter<WordHistory, WordHistoryAdapter.WordHistoryViewHolder>(DIFF_CALLBACK) {
     private val dateFormat = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT)
-    private val items = mutableListOf<WordHistory>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): WordHistoryViewHolder {
         val binding = ItemWordBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -19,15 +20,11 @@ class WordHistoryAdapter : RecyclerView.Adapter<WordHistoryAdapter.WordHistoryVi
     }
 
     override fun onBindViewHolder(holder: WordHistoryViewHolder, position: Int) {
-        holder.bind(items[position])
+        holder.bind(getItem(position))
     }
 
-    override fun getItemCount(): Int = items.size
-
     fun submitHistory(history: List<WordHistory>) {
-        items.clear()
-        items.addAll(history)
-        notifyDataSetChanged()
+        submitList(history)
     }
 
     inner class WordHistoryViewHolder(
@@ -40,6 +37,19 @@ class WordHistoryAdapter : RecyclerView.Adapter<WordHistoryAdapter.WordHistoryVi
                 append(item.confidence.asPercentText())
                 append("\n")
                 append(dateFormat.format(Date(item.timestampMillis)))
+            }
+        }
+    }
+
+    companion object {
+        val DIFF_CALLBACK = object : DiffUtil.ItemCallback<WordHistory>() {
+            override fun areItemsTheSame(oldItem: WordHistory, newItem: WordHistory): Boolean {
+                return oldItem.timestampMillis == newItem.timestampMillis &&
+                    oldItem.word == newItem.word
+            }
+
+            override fun areContentsTheSame(oldItem: WordHistory, newItem: WordHistory): Boolean {
+                return oldItem == newItem
             }
         }
     }

@@ -10,8 +10,8 @@ import com.signlanguage.translator.utils.Constants
 class FrameBufferManagerTest {
     @Test
     fun defaultFrameSize_matchesModelFeatureContract() {
-        assertEquals(1629, Constants.MODEL_FEATURE_SIZE)
-        assertEquals(543, Constants.SELECTED_LANDMARK_COUNT)
+        assertEquals(144, Constants.MODEL_FEATURE_SIZE)
+        assertEquals(48, Constants.SELECTED_LANDMARK_COUNT)
         assertEquals(250, Constants.MODEL_OUTPUT_CLASSES)
 
         val manager = FrameBufferManager()

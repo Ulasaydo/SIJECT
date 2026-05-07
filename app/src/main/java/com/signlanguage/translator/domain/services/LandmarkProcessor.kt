@@ -25,7 +25,25 @@ class LandmarkProcessor(context: Context) {
             points.getOrNull(index)?.takeIf { it.visibility >= Constants.LANDMARK_VISIBILITY_THRESHOLD }
                 ?: LandmarkPoint(x = 0f, y = 0f, z = 0f, visibility = 0f)
         }
-        return TensorUtils.flattenLandmarks(selectedPoints)
+        val flat = TensorUtils.flattenLandmarks(selectedPoints)
+        return standardizePerFrame(flat)
+    }
+
+    private fun standardizePerFrame(values: FloatArray): FloatArray {
+        if (values.isEmpty()) return values
+        var sum = 0.0
+        for (v in values) sum += v
+        val mean = (sum / values.size).toFloat()
+        var sqSum = 0.0
+        for (v in values) {
+            val d = v - mean
+            sqSum += d * d
+        }
+        val std = kotlin.math.sqrt(sqSum / values.size).toFloat()
+        if (std < EPSILON) return FloatArray(values.size)
+        val out = FloatArray(values.size)
+        for (i in values.indices) out[i] = (values[i] - mean) / std
+        return out
     }
 
     private fun loadLandmarkIndices(context: Context): Result<List<Int>> {
@@ -40,6 +58,8 @@ class LandmarkProcessor(context: Context) {
     }
 
     internal companion object {
+        private const val EPSILON = 1e-6f
+
         fun parseLandmarkIndices(json: String): List<Int> {
             val root = JSONObject(json)
             val indicesArray = root.optJSONArray("indices")

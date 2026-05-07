@@ -23,6 +23,7 @@ import com.signlanguage.translator.domain.usecases.ProcessFrameUseCase
 import com.signlanguage.translator.domain.usecases.SmoothedPredictionUseCase
 import com.signlanguage.translator.domain.usecases.TranslateWordsUseCase
 import com.signlanguage.translator.utils.Constants
+import com.signlanguage.translator.utils.Debouncer
 import com.signlanguage.translator.utils.LogUtils
 import com.signlanguage.translator.utils.TensorUtils
 import kotlinx.coroutines.Dispatchers
@@ -51,6 +52,9 @@ class TranslationViewModel(application: Application) : AndroidViewModel(applicat
     private val isProcessingFrame = AtomicBoolean(false)
     private val isTranslating = AtomicBoolean(false)
     private val pendingTranslation = AtomicBoolean(false)
+    private val translationDebouncer = Debouncer(viewModelScope, TRANSLATION_DEBOUNCE_MS)
+    @Volatile
+    private var lastTranslatedSnapshot: List<String>? = null
     @Volatile
     private var currentSettings = settingsRepository.getSettings()
     private var frameCount = 0
@@ -73,10 +77,14 @@ class TranslationViewModel(application: Application) : AndroidViewModel(applicat
         viewModelScope.launch(Dispatchers.Default) {
             try {
                 val settings = currentSettings
+                val t0 = System.currentTimeMillis()
                 val result = processFrameUseCase(imageProxy, settings.confidenceThreshold)
+                val t1 = System.currentTimeMillis()
                 val prediction = result.prediction?.let {
                     smoothedPredictionUseCase(it, settings.confidenceThreshold)
                 }
+                val t2 = System.currentTimeMillis()
+                LogUtils.d("PerfProfile", "frame=${t1 - t0}ms (lm=${result.landmarkTimeMillis} inf=${result.inferenceTimeMillis}) smooth=${t2 - t1}ms")
                 var acceptedWordAdded = false
                 if (prediction?.accepted == true) {
                     acceptedWordAdded = synchronized(acceptedWordsLock) {
@@ -93,6 +101,8 @@ class TranslationViewModel(application: Application) : AndroidViewModel(applicat
                 }
 
                 updateFps()
+                val t3 = System.currentTimeMillis()
+                LogUtils.d("PerfProfile", "post=${t3 - t2}ms total=${t3 - t0}ms fps=$currentFps")
                 postState(latestState.copy(
                     recognizedWords = prediction?.candidates ?: latestState.recognizedWords,
                     landmarks = result.landmarks,
@@ -107,7 +117,7 @@ class TranslationViewModel(application: Application) : AndroidViewModel(applicat
                     errorMessage = null
                 ))
                 if (acceptedWordAdded) {
-                    translateAcceptedWords()
+                    translateAcceptedWordsDebounced()
                 }
             } catch (throwable: Throwable) {
                 LogUtils.e("ViewModel", "Frame processing failed", throwable)
@@ -132,6 +142,8 @@ class TranslationViewModel(application: Application) : AndroidViewModel(applicat
     }
 
     fun clearRecognizedWords() {
+        translationDebouncer.cancel()
+        lastTranslatedSnapshot = null
         synchronized(acceptedWordsLock) {
             acceptedWords.clear()
         }
@@ -145,7 +157,13 @@ class TranslationViewModel(application: Application) : AndroidViewModel(applicat
     }
 
     fun refreshTranslation() {
+        translationDebouncer.cancel()
+        lastTranslatedSnapshot = null
         translateAcceptedWords()
+    }
+
+    internal fun translateAcceptedWordsDebounced() {
+        translationDebouncer.submit { translateAcceptedWords() }
     }
 
     fun speakCurrentSentence() {
@@ -283,7 +301,9 @@ class TranslationViewModel(application: Application) : AndroidViewModel(applicat
     }
 
     private fun translateAcceptedWords() {
-        if (synchronized(acceptedWordsLock) { acceptedWords.isEmpty() }) return
+        val wordsSnapshot = synchronized(acceptedWordsLock) { acceptedWords.toList() }
+        if (wordsSnapshot.isEmpty()) return
+        if (lastTranslatedSnapshot == wordsSnapshot) return
         if (!isTranslating.compareAndSet(false, true)) {
             pendingTranslation.set(true)
             return
@@ -291,7 +311,6 @@ class TranslationViewModel(application: Application) : AndroidViewModel(applicat
 
         viewModelScope.launch(Dispatchers.IO) {
             postState(latestState.copy(isLoading = true, apiError = null))
-            val wordsSnapshot = synchronized(acceptedWordsLock) { acceptedWords.toList() }
             val result = translateWordsUseCase(wordsSnapshot)
             result
                 .onSuccess { translation ->
@@ -304,7 +323,7 @@ class TranslationViewModel(application: Application) : AndroidViewModel(applicat
                         alternatives = translation.alternatives,
                         backendOnline = true
                     ))
-                    textToSpeechService.speak(sentence)
+                    lastTranslatedSnapshot = wordsSnapshot
                     LogUtils.d("ViewModel", "Translation successful: ${translation.sentence}")
                 }
                 .onFailure { exception ->
@@ -337,6 +356,7 @@ class TranslationViewModel(application: Application) : AndroidViewModel(applicat
     }
 
     companion object {
+        internal const val TRANSLATION_DEBOUNCE_MS = 800L
         private const val DEMO_HELLO_INDEX = 0
         private const val DEMO_DRINK_INDEX = 1
         private const val DEMO_HELLO_GESTURE = 0.2f
