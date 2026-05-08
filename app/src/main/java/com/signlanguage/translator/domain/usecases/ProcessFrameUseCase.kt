@@ -6,6 +6,7 @@ import com.signlanguage.translator.data.model.PredictionResult
 import com.signlanguage.translator.domain.services.FrameBufferManager
 import com.signlanguage.translator.domain.services.LandmarkProcessor
 import com.signlanguage.translator.domain.services.MediaPipeService
+import com.signlanguage.translator.domain.services.MotionFilter
 import com.signlanguage.translator.domain.services.TFLiteService
 import com.signlanguage.translator.utils.Constants
 import com.signlanguage.translator.utils.PerformanceMonitor
@@ -18,6 +19,7 @@ class ProcessFrameUseCase(
     private val landmarkProcessor: LandmarkProcessor,
     private val frameBufferManager: FrameBufferManager,
     private val tfliteService: TFLiteService,
+    private val motionFilter: MotionFilter = MotionFilter(),
     private val performanceMonitor: PerformanceMonitor = PerformanceMonitor()
 ) {
     private var processedFrameCount = PREDICTION_INTERVAL_FRAMES - 1
@@ -31,9 +33,10 @@ class ProcessFrameUseCase(
         performanceMonitor.startTiming("MediaPipe")
         val landmarks = mediaPipeService.extractLandmarks(imageProxy)
         val landmarkTimeMillis = performanceMonitor.endTiming("MediaPipe")
+        val hasMotion = motionFilter.shouldProcess(landmarks)
         val flattenedFrame = landmarkProcessor.normalizeAndFlatten(landmarks)
         val isBufferFull = frameBufferManager.addFrame(flattenedFrame)
-        val shouldRunPrediction = isBufferFull && shouldRunPrediction()
+        val shouldRunPrediction = isBufferFull && hasMotion && shouldRunPrediction()
         val prediction = if (shouldRunPrediction) {
             performanceMonitor.startTiming("TFLite")
             tfliteService.predict(frameBufferManager.getBufferOrdered(), confidenceThreshold)

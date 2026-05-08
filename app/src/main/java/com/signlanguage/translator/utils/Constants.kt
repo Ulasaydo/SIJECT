@@ -15,5 +15,6 @@ object Constants {
     const val MODEL_OUTPUT_CLASSES = 250
     const val CONFIDENCE_THRESHOLD = 0.70f
     const val LANDMARK_VISIBILITY_THRESHOLD = 0.5f
-    const val SMOOTHING_WINDOW_SIZE = 3
+    const val SMOOTHING_WINDOW_SIZE = 6
+    const val SMOOTHING_REQUIRED_CONSECUTIVE = 5
 }

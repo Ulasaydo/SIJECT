@@ -19,7 +19,7 @@ class TranslationPipelineSimulationTest {
             this[DRINK_INDEX] = "drink"
         }
         val frameBufferManager = FrameBufferManager()
-        val smoothedPredictionUseCase = SmoothedPredictionUseCase(windowSize = 3)
+        val smoothedPredictionUseCase = SmoothedPredictionUseCase(windowSize = 3, requiredConsecutive = 2)
         val acceptedWords = mutableListOf<String>()
 
         feedGesture(

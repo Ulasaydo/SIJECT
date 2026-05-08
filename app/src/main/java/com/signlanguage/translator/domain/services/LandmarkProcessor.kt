@@ -40,9 +40,8 @@ class LandmarkProcessor(context: Context) {
             sqSum += d * d
         }
         val std = kotlin.math.sqrt(sqSum / values.size).toFloat()
-        if (std < EPSILON) return FloatArray(values.size)
         val out = FloatArray(values.size)
-        for (i in values.indices) out[i] = (values[i] - mean) / std
+        for (i in values.indices) out[i] = (values[i] - mean) / (std + EPSILON)
         return out
     }
 
