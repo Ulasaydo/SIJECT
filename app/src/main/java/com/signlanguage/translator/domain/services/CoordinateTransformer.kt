@@ -3,13 +3,18 @@ package com.signlanguage.translator.domain.services
 import com.signlanguage.translator.data.model.LandmarkPoint
 
 /**
- * Pure functions to transform upright normalized landmarks for overlay rendering.
+ * Pure functions to transform normalized landmarks.
  *
- * MediaPipe Tasks Vision returns landmarks already rotated to display orientation
- * when ImageProcessingOptions.setRotationDegrees(rotationDegrees) is provided.
- * The model consumes these upright landmarks directly. The overlay path additionally
- * mirrors horizontally for the front-facing camera so the user sees a natural
- * "mirror" view.
+ * ROTATION CONTRACT — DO NOT CHANGE without device testing.
+ * We do NOT pass rotationDegrees to MediaPipe (ImageProcessingOptions). Detection
+ * runs on the raw sensor-orientation image and MediaPipeService rotates the output
+ * landmarks to display orientation via [rotateNormalized]. This combination is the
+ * only one verified on real hardware (Samsung A21s) to place landmarks correctly on
+ * the user's body. Earlier attempts to "let MediaPipe rotate" produced mis-aligned
+ * overlays even though it sounds cleaner in theory.
+ *
+ * For the front-facing camera the resulting landmarks are also mirrored horizontally
+ * via [applyMirror] so the model sees the orientation matching the training data.
  */
 object CoordinateTransformer {
 

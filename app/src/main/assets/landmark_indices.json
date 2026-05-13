@@ -1,9 +1,10 @@
 {
-  "description": "48 selected landmarks for asl_model_final.tflite: pose upper body (6) + left hand (21) + right hand (21). Total features = 48 * 3 = 144.",
-  "source_order": "pose_33 (0-32), face_468 (33-500), left_hand_21 (501-521), right_hand_21 (522-542)",
+  "description": "48 selected landmarks for asl_model_final.tflite (Conv1D, input 30x144). Selection from training notebook asl-smalldata.ipynb: SELECTED = LEFT_HAND(468-488) + RIGHT_HAND(522-542) + KEY_POSE(500-505). Order matters — must match training exactly. Features = 48 * 3 = 144.",
+  "source_order": "Kaggle ASL Signs parquet flat: face(0-467), left_hand(468-488), pose(489-521), right_hand(522-542)",
+  "selection_order": "LEFT_HAND then RIGHT_HAND then KEY_POSE",
   "indices": [
-    11, 12, 13, 14, 15, 16,
-    501, 502, 503, 504, 505, 506, 507, 508, 509, 510, 511, 512, 513, 514, 515, 516, 517, 518, 519, 520, 521,
-    522, 523, 524, 525, 526, 527, 528, 529, 530, 531, 532, 533, 534, 535, 536, 537, 538, 539, 540, 541, 542
+    468, 469, 470, 471, 472, 473, 474, 475, 476, 477, 478, 479, 480, 481, 482, 483, 484, 485, 486, 487, 488,
+    522, 523, 524, 525, 526, 527, 528, 529, 530, 531, 532, 533, 534, 535, 536, 537, 538, 539, 540, 541, 542,
+    500, 501, 502, 503, 504, 505
   ]
 }

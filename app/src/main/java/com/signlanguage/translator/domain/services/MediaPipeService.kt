@@ -34,13 +34,24 @@ class MediaPipeService(
     private var requiredAssetsVerified = false
 
     @OptIn(ExperimentalGetImage::class)
-    fun extractLandmarks(imageProxy: ImageProxy): List<LandmarkPoint> {
+    fun extractLandmarks(
+        imageProxy: ImageProxy,
+        lensFacingFront: Boolean = false
+    ): List<LandmarkPoint> {
         ensureLandmarkers()
         val mediaImage = imageProxy.image
             ?: throw IllegalStateException("Camera frame image is unavailable.")
         val mpImage = MediaImageBuilder(mediaImage).build()
         val rotationDegrees = imageProxy.imageInfo.rotationDegrees
         val timestampMillis = TimeUnit.NANOSECONDS.toMillis(imageProxy.imageInfo.timestamp)
+        // ROTATION CONTRACT — DO NOT CHANGE.
+        // MediaPipe Tasks runs detection on the raw sensor-orientation image (we
+        // intentionally do NOT call ImageProcessingOptions.setRotationDegrees here).
+        // The returned normalized landmarks are then rotated to display orientation
+        // by applyDisplayRotation() below. On Samsung A21s and similar devices this
+        // is the only configuration that places the overlay landmarks correctly on
+        // the user's body. Passing rotationDegrees to MediaPipe caused mis-aligned
+        // landmarks during device testing — see ProjectMemory in CLAUDE.md.
         val imageOptions = ImageProcessingOptions.builder().build()
 
         return try {
@@ -66,13 +77,25 @@ class MediaPipeService(
             val hands = handsResult?.landmarks().orEmpty()
             val handedness = handsResult?.handedness().orEmpty()
 
+            // Kaggle ASL Signs flat ordering expected by the trained Conv1D model:
+            // face (0..467) | left_hand (468..488) | pose (489..521) | right_hand (522..542)
+            // Face stays as 468 zero placeholders when ENABLE_FACE_LANDMARKER=false; the
+            // selected landmark indices (LandmarkProcessor) skip the face range entirely.
+            // On the front camera MediaPipe labels hands from the camera's POV — swap so
+            // the user's anatomical left/right matches the training convention (display).
+            val leftLabel = if (lensFacingFront) "Right" else "Left"
+            val rightLabel = if (lensFacingFront) "Left" else "Right"
             val raw = buildList(Constants.TOTAL_LANDMARK_COUNT) {
-                appendLandmarks(pose, POSE_LANDMARK_COUNT)
                 appendLandmarks(face, FACE_LANDMARK_COUNT)
-                appendHandLandmarks(hands, handedness, "Left")
-                appendHandLandmarks(hands, handedness, "Right")
+                appendHandLandmarks(hands, handedness, leftLabel)
+                appendLandmarks(pose, POSE_LANDMARK_COUNT)
+                appendHandLandmarks(hands, handedness, rightLabel)
             }
-            applyDisplayRotation(raw, rotationDegrees)
+            // Rotate to display orientation (see ROTATION CONTRACT above).
+            val rotated = applyDisplayRotation(raw, rotationDegrees)
+            // Front camera: mirror x so the model sees the same orientation as the user
+            // perceives (and as the training data was captured).
+            if (lensFacingFront) CoordinateTransformer.applyMirror(rotated, true) else rotated
         } finally {
             mpImage.close()
         }

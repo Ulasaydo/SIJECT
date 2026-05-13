@@ -119,7 +119,10 @@ class LandmarkOverlayView @JvmOverloads constructor(
     }
 
     companion object {
-        private const val LEFT_HAND_OFFSET = 501
+        // Kaggle ASL Signs flat ordering — see MediaPipeService.kt buildList:
+        // face 0..467 | left_hand 468..488 | pose 489..521 | right_hand 522..542.
+        private const val POSE_OFFSET = 489
+        private const val LEFT_HAND_OFFSET = 468
         private const val RIGHT_HAND_OFFSET = 522
 
         private val POSE_CONNECTIONS = listOf(
@@ -158,7 +161,7 @@ class LandmarkOverlayView @JvmOverloads constructor(
             30 to 32,
             27 to 31,
             28 to 32
-        )
+        ).map { (a, b) -> (POSE_OFFSET + a) to (POSE_OFFSET + b) }
 
         private fun handConnections(offset: Int): List<Pair<Int, Int>> {
             return listOf(

@@ -26,12 +26,13 @@ class ProcessFrameUseCase(
 
     suspend operator fun invoke(
         imageProxy: ImageProxy,
-        confidenceThreshold: Float = Constants.CONFIDENCE_THRESHOLD
+        confidenceThreshold: Float = Constants.CONFIDENCE_THRESHOLD,
+        lensFacingFront: Boolean = false
     ): FrameProcessingResult {
         val sourceImageWidth = imageProxy.displayOrientedWidth()
         val sourceImageHeight = imageProxy.displayOrientedHeight()
         performanceMonitor.startTiming("MediaPipe")
-        val landmarks = mediaPipeService.extractLandmarks(imageProxy)
+        val landmarks = mediaPipeService.extractLandmarks(imageProxy, lensFacingFront)
         val landmarkTimeMillis = performanceMonitor.endTiming("MediaPipe")
         val hasMotion = motionFilter.shouldProcess(landmarks)
         val flattenedFrame = landmarkProcessor.normalizeAndFlatten(landmarks)

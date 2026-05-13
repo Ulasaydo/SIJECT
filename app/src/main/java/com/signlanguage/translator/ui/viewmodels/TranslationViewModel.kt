@@ -78,7 +78,8 @@ class TranslationViewModel(application: Application) : AndroidViewModel(applicat
             try {
                 val settings = currentSettings
                 val t0 = System.currentTimeMillis()
-                val result = processFrameUseCase(imageProxy, settings.confidenceThreshold)
+                val lensFacingFront = settings.cameraLensFacing == androidx.camera.core.CameraSelector.LENS_FACING_FRONT
+                val result = processFrameUseCase(imageProxy, settings.confidenceThreshold, lensFacingFront)
                 val t1 = System.currentTimeMillis()
                 val prediction = result.prediction?.let {
                     smoothedPredictionUseCase(it, settings.confidenceThreshold)

@@ -34,10 +34,21 @@ class FrameBufferManager(
         return isFull()
     }
 
+    /**
+     * Returns the rolling 30-frame window in chronological order.
+     *
+     * Conv1D model expects a fixed [maxFrames] x [frameSize] block on every invoke.
+     * - Warmup (frameCount < maxFrames): zero-pad at the START (pre-pad) so real frames
+     *   land at the END of the window. This matches the training convention where short
+     *   sequences are left-padded.
+     * - Full buffer: chronological order from oldest to newest (circular unroll).
+     */
     fun getBufferOrdered(): FloatArray {
         val result = FloatArray(maxFrames * frameSize)
         if (!isFull()) {
-            System.arraycopy(buffer, 0, result, 0, frameCount * frameSize)
+            // Pre-pad: leading (maxFrames - frameCount) frames remain zero, real frames at end.
+            val destOffset = (maxFrames - frameCount) * frameSize
+            System.arraycopy(buffer, 0, result, destOffset, frameCount * frameSize)
             return result
         }
 
@@ -58,6 +69,25 @@ class FrameBufferManager(
             oldestIndex * frameSize
         )
         return result
+    }
+
+    companion object {
+        /**
+         * Uniformly samples [target] frames from [frames] using evenly spaced indices.
+         * Used for offline replay / long-gesture paths; the live pipeline keeps the
+         * sliding window in [getBufferOrdered]. Returns frames as-is when count == target.
+         */
+        fun sampleUniform(frames: List<FloatArray>, target: Int): List<FloatArray> {
+            if (frames.isEmpty() || target <= 0) return emptyList()
+            if (frames.size == target) return frames
+            if (frames.size < target) return frames
+            val n = frames.size
+            return List(target) { i ->
+                // floor((i * n) / target) yields evenly spaced indices in [0, n).
+                val idx = ((i.toLong() * n) / target).toInt().coerceIn(0, n - 1)
+                frames[idx]
+            }
+        }
     }
 
     fun calculateFps(): Int {

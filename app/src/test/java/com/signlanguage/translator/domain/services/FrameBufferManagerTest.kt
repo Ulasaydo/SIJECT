@@ -47,6 +47,41 @@ class FrameBufferManagerTest {
         )
     }
 
+    @Test
+    fun getBufferOrdered_prePadsWhenNotFull() {
+        val manager = FrameBufferManager(frameSize = 2, maxFrames = 3)
+
+        manager.addFrame(floatArrayOf(1f, 2f))
+        manager.addFrame(floatArrayOf(3f, 4f))
+
+        // 2 frames in a 3-frame window → leading slot zero-padded, real frames at the end.
+        assertArrayEquals(
+            floatArrayOf(0f, 0f, 1f, 2f, 3f, 4f),
+            manager.getBufferOrdered(),
+            0.0001f
+        )
+    }
+
+    @Test
+    fun sampleUniform_picksEvenlySpacedFrames() {
+        val frames = (0 until 9).map { i -> floatArrayOf(i.toFloat()) }
+
+        val sampled = FrameBufferManager.sampleUniform(frames, 3)
+
+        assertEquals(3, sampled.size)
+        // (i * 9) / 3 = 0, 3, 6
+        assertEquals(0f, sampled[0][0], 0f)
+        assertEquals(3f, sampled[1][0], 0f)
+        assertEquals(6f, sampled[2][0], 0f)
+    }
+
+    @Test
+    fun sampleUniform_returnsAsIsWhenShorterOrEqual() {
+        val frames = listOf(floatArrayOf(1f), floatArrayOf(2f))
+        assertEquals(frames, FrameBufferManager.sampleUniform(frames, 5))
+        assertEquals(frames, FrameBufferManager.sampleUniform(frames, 2))
+    }
+
     @Test(expected = IllegalArgumentException::class)
     fun addFrame_rejectsWrongFrameSize() {
         val manager = FrameBufferManager(frameSize = 2, maxFrames = 3)

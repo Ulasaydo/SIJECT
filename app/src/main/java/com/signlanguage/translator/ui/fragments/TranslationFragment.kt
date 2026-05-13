@@ -95,7 +95,10 @@ class TranslationFragment : Fragment() {
             binding.confidenceBar.setConfidence(state.recognizedWords.firstOrNull()?.confidence ?: 0f)
             val showOverlay = state.debugMode && state.showLandmarkOverlay
             binding.landmarkOverlay.visibility = if (showOverlay) View.VISIBLE else View.GONE
-            binding.landmarkOverlay.setMirrorHorizontally(activeLensFacing == CameraSelector.LENS_FACING_FRONT)
+            // Landmarks from MediaPipeService are already mirrored on the front camera
+            // (the pipeline normalizes coordinates to display orientation), so the
+            // overlay must NOT mirror again — that produced the previous misalignment.
+            binding.landmarkOverlay.setMirrorHorizontally(false)
             binding.landmarkOverlay.setSourceImageSize(state.sourceImageWidth, state.sourceImageHeight)
             binding.landmarkOverlay.submitLandmarks(if (showOverlay) state.landmarks else emptyList())
             binding.fpsText.text = getString(R.string.fps_counter, state.fps)

@@ -21,14 +21,23 @@ class LandmarkProcessor(context: Context) {
                 it
             )
         }
+        // Training contract (asl-smalldata.ipynb):
+        //   processed = np.nan_to_num(processed)                        -> missing landmarks become 0
+        //   mean = processed.mean(axis=1, keepdims=True)                -> per-frame mean over 144 features
+        //   std  = processed.std(axis=1, keepdims=True)                 -> per-frame std (ddof=0)
+        //   processed = (processed - mean) / (std + 1e-6)               -> per-frame z-score
+        // We replicate this here. No visibility threshold filter — training applied none.
         val selectedPoints = selectedIndices.map { index ->
-            points.getOrNull(index)?.takeIf { it.visibility >= Constants.LANDMARK_VISIBILITY_THRESHOLD }
-                ?: LandmarkPoint(x = 0f, y = 0f, z = 0f, visibility = 0f)
+            points.getOrNull(index) ?: ZERO_POINT
         }
         val flat = TensorUtils.flattenLandmarks(selectedPoints)
         return standardizePerFrame(flat)
     }
 
+    /**
+     * Per-frame z-score normalization across all 144 features (axis=1 in training notebook).
+     * Population std (divide by N, matches numpy.std default ddof=0).
+     */
     private fun standardizePerFrame(values: FloatArray): FloatArray {
         if (values.isEmpty()) return values
         var sum = 0.0
@@ -57,7 +66,9 @@ class LandmarkProcessor(context: Context) {
     }
 
     internal companion object {
+        // Matches numpy 1e-6 epsilon used in training (asl-smalldata.ipynb).
         private const val EPSILON = 1e-6f
+        private val ZERO_POINT = LandmarkPoint(x = 0f, y = 0f, z = 0f, visibility = 0f)
 
         fun parseLandmarkIndices(json: String): List<Int> {
             val root = JSONObject(json)
